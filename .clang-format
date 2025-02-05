@@ -1,0 +1,13 @@
+BasedOnStyle: Google
+
+AlignAfterOpenBracket: BlockIndent
+AlignArrayOfStructures: Right
+AlignOperands: AlignAfterOperator
+
+BreakConstructorInitializers: BeforeComma
+
+IndentWidth: 4
+ContinuationIndentWidth: 4
+AccessModifierOffset: -2
+
+
