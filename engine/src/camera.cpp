@@ -17,12 +17,14 @@ class TRotatingCamera : public ICamera {
 
   private:
     glm::mat4x4 initView_;
+    double initTime_;
 };
 
-TRotatingCamera::TRotatingCamera(glm::mat4x4 view) : initView_(view) {}
+TRotatingCamera::TRotatingCamera(glm::mat4x4 view)
+    : initView_(view), initTime_(glfwGetTime()) {}
 
 glm::mat4x4 TRotatingCamera::view() const {
-    float angle = glfwGetTime();
+    float angle = glfwGetTime() - initTime_;
 
     return glm::rotate(initView_, angle, {0.f, 1.f, 0.f});
 }
