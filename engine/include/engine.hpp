@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include "camera.hpp"
+
 namespace NGameEngine {
 
 namespace {
@@ -16,6 +18,8 @@ class TGameEngine {
     void init();
     void deinit();
     void run();
+
+    void bindCamera(const NCamera::ICamera* camera_);
 
   private:
     std::unique_ptr<TGameEngineImpl> impl_;

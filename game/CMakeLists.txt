@@ -1,4 +1,9 @@
-set(SOURCES src/main.cpp)
+set(INCLUDES_DIR include)
+
+set(
+    SOURCES
+    src/main.cpp
+)
 
 add_executable(gachiball ${SOURCES})
 

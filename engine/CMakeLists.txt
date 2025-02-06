@@ -21,8 +21,18 @@ find_package(glfw3 3.3 REQUIRED)
 find_package(OpenGL REQUIRED)
 
 set(INCLUDES_DIR include)
-set(INCLUDES ${INCLUDES_DIR}/engine.hpp ${INCLUDES_DIR}/mesh.hpp)
-set(SOURCES src/engine.cpp src/mesh.cpp)
+set(
+    INCLUDES
+    ${INCLUDES_DIR}/engine.hpp
+    ${INCLUDES_DIR}/mesh.hpp
+    ${INCLUDES_DIR}/camera.hpp
+)
+set(
+    SOURCES
+    src/engine.cpp
+    src/mesh.cpp
+    src/camera.cpp
+)
 
 add_library(engine ${SOURCES} ${INCLUDES})
 

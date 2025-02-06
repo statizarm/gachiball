@@ -28,14 +28,18 @@ namespace {
 class TGameEngineImpl {
   public:
     TGameEngineImpl() = default;
+
     void init();
     void deinit();
     void run();
+
+    void bindCamera(const NCamera::ICamera *camera);
 
   private:
     GLFWwindow *window_;
 
     std::vector<std::unique_ptr<NMesh::IMesh>> meshes_;
+    const NCamera::ICamera *camera_;
 };
 
 void TGameEngineImpl::init() {
@@ -86,15 +90,8 @@ void TGameEngineImpl::run() {
         glClearColor(.2f, .3f, .3f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        float radius = 20.f;
-        float coordX = glm::cos(glfwGetTime()) * radius;
-        float coordZ = glm::sin(glfwGetTime()) * radius;
-
         // auto model = glm::identity<glm::mat4x4>();
-        auto view = glm::lookAt(
-            glm::vec3{coordX, 10.f, coordZ}, glm::vec3{0.f, 0.f, 0.f},
-            glm::vec3{0.f, 1.f, 0.f}
-        );
+        auto view = camera_->view();
         auto projection = glm::perspective(
             glm::radians(45.f),
             static_cast<float>(width) / static_cast<float>(height), 0.1f, 100.f
@@ -110,6 +107,10 @@ void TGameEngineImpl::run() {
 
         std::this_thread::sleep_for(16ms);
     }
+}
+
+void TGameEngineImpl::bindCamera(const NCamera::ICamera *camera) {
+    camera_ = camera;
 }
 
 }  // namespace
@@ -135,6 +136,12 @@ void TGameEngine::run() {
     assert(impl_);
 
     impl_->run();
+}
+
+void TGameEngine::bindCamera(const NCamera::ICamera *camera) {
+    assert(impl_);
+
+    impl_->bindCamera(camera);
 }
 
 };  // namespace NGameEngine
