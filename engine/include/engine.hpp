@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "body.hpp"
 #include "camera.hpp"
 #include "game.hpp"
 
@@ -18,9 +19,12 @@ class TGameEngine {
 
     void init();
     void deinit();
-    void run(NGameEngine::IGame* game);
+    void run(IGame* game);
 
-    void bindCamera(const NGameEngine::ICamera* camera);
+    void bindCamera(const ICamera* camera);
+
+    void addBody(TBody* body);
+    void removeBody(TBody* body);
 
   private:
     std::unique_ptr<TGameEngineImpl> impl_;

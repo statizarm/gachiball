@@ -23,6 +23,7 @@ find_package(OpenGL REQUIRED)
 set(INCLUDES_DIR include)
 set(
     INCLUDES
+    ${INCLUDES_DIR}/body.hpp
     ${INCLUDES_DIR}/camera.hpp
     ${INCLUDES_DIR}/engine.hpp
     ${INCLUDES_DIR}/game.hpp

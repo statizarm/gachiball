@@ -8,6 +8,7 @@
 #include <cassert>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
+#include <unordered_set>
 #include <vector>
 
 #include "mesh.hpp"
@@ -34,10 +35,13 @@ class TGameEngineImpl {
 
     void bindCamera(const NGameEngine::ICamera *camera);
 
+    void addBody(TBody *body);
+    void removeBody(TBody *body);
+
   private:
     GLFWwindow *window_;
 
-    std::vector<std::unique_ptr<NGameEngine::IMesh>> meshes_;
+    std::unordered_set<TBody *> bodies_;
     const NGameEngine::ICamera *camera_;
 };
 
@@ -76,9 +80,6 @@ void TGameEngineImpl::deinit() {
 }
 
 void TGameEngineImpl::run(NGameEngine::IGame *game) {
-    meshes_.emplace_back(std::move(NGameEngine::CreatePlatformMesh()));
-    meshes_.emplace_back(std::move(NGameEngine::CreateBallMesh()));
-
     glEnable(GL_DEPTH_TEST);
     game->init();
     auto start = glfwGetTime();
@@ -97,10 +98,12 @@ void TGameEngineImpl::run(NGameEngine::IGame *game) {
             glm::radians(45.f),
             static_cast<float>(width) / static_cast<float>(height), 0.1f, 100.f
         );
-        auto mvp = projection * view;
+        auto vp = projection * view;
 
-        for (const auto &mesh : meshes_) {
-            mesh->draw(mvp);
+        for (const auto body : bodies_) {
+            auto model =
+                glm::translate(glm::mat4_cast(body->rotation), body->position);
+            body->mesh->draw(vp * model);
         }
 
         glfwSwapBuffers(window_);
@@ -119,6 +122,10 @@ void TGameEngineImpl::run(NGameEngine::IGame *game) {
 void TGameEngineImpl::bindCamera(const NGameEngine::ICamera *camera) {
     camera_ = camera;
 }
+
+void TGameEngineImpl::addBody(TBody *body) { bodies_.insert(body); }
+
+void TGameEngineImpl::removeBody(TBody *body) { bodies_.erase(body); }
 
 }  // namespace
 
@@ -149,6 +156,18 @@ void TGameEngine::bindCamera(const NGameEngine::ICamera *camera) {
     assert(impl_);
 
     impl_->bindCamera(camera);
+}
+
+void TGameEngine::addBody(TBody *body) {
+    assert(impl_);
+
+    impl_->addBody(body);
+}
+
+void TGameEngine::removeBody(TBody *body) {
+    assert(impl_);
+
+    impl_->removeBody(body);
 }
 
 };  // namespace NGameEngine

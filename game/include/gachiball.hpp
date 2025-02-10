@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "engine.hpp"
 #include "game.hpp"
 
@@ -15,6 +17,11 @@ class TGame : public NGameEngine::IGame {
     void deinit() override;
 
   private:
+    NGameEngine::TBody platform_;
+    NGameEngine::TBody ball_;
+
+    std::vector<std::unique_ptr<NGameEngine::IMesh>> meshes_;
+
     std::unique_ptr<NGameEngine::ICamera> camera_;
 
     NGameEngine::TGameEngine* engine_;
