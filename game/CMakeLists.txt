@@ -1,14 +1,20 @@
 set(INCLUDES_DIR include)
 
 set(
+    INCLUDES
+    ${INCLUDES_DIR}/gachiball.hpp
+)
+
+set(
     SOURCES
+    src/gachiball.cpp
     src/main.cpp
 )
 
-add_executable(gachiball ${SOURCES})
+add_executable(gachiball ${SOURCES} ${INCLUDES})
 
 target_include_directories(
   gachiball
   PUBLIC
-  ${CMAKE_CURRENT_BINARY_DIR}/include
+  ${INCLUDES_DIR}
 )

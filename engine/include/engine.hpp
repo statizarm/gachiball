@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "camera.hpp"
+#include "game.hpp"
 
 namespace NGameEngine {
 
@@ -17,9 +18,9 @@ class TGameEngine {
 
     void init();
     void deinit();
-    void run();
+    void run(NGame::IGame* game);
 
-    void bindCamera(const NCamera::ICamera* camera_);
+    void bindCamera(const NCamera::ICamera* camera);
 
   private:
     std::unique_ptr<TGameEngineImpl> impl_;

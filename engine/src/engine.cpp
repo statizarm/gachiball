@@ -8,7 +8,6 @@
 #include <cassert>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
-#include <thread>
 #include <vector>
 
 #include "mesh.hpp"
@@ -31,7 +30,7 @@ class TGameEngineImpl {
 
     void init();
     void deinit();
-    void run();
+    void run(NGame::IGame *game);
 
     void bindCamera(const NCamera::ICamera *camera);
 
@@ -76,14 +75,16 @@ void TGameEngineImpl::deinit() {
     glfwTerminate();
 }
 
-void TGameEngineImpl::run() {
-    using namespace std::chrono_literals;
-
+void TGameEngineImpl::run(NGame::IGame *game) {
     meshes_.emplace_back(std::move(NMesh::CreatePlatformMesh()));
     meshes_.emplace_back(std::move(NMesh::CreateBallMesh()));
 
     glEnable(GL_DEPTH_TEST);
+    game->init();
+    auto start = glfwGetTime();
     while (!glfwWindowShouldClose(window_)) {
+        ///////////////////////////////////////////////////////////////////////
+        // NOTE: DRAW
         int width, height;
         glfwGetWindowSize(window_, &width, &height);
 
@@ -105,8 +106,14 @@ void TGameEngineImpl::run() {
         glfwSwapBuffers(window_);
         glfwPollEvents();
 
-        std::this_thread::sleep_for(16ms);
+        ///////////////////////////////////////////////////////////////////////
+        // NOTE: update game
+
+        auto duration = glfwGetTime() - start;
+        start = glfwGetTime();
+        game->update(duration);
     }
+    game->deinit();
 }
 
 void TGameEngineImpl::bindCamera(const NCamera::ICamera *camera) {
@@ -132,10 +139,10 @@ void TGameEngine::deinit() {
     impl_.reset();
 }
 
-void TGameEngine::run() {
+void TGameEngine::run(NGame::IGame *game) {
     assert(impl_);
 
-    impl_->run();
+    impl_->run(game);
 }
 
 void TGameEngine::bindCamera(const NCamera::ICamera *camera) {

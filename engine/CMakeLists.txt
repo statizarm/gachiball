@@ -23,15 +23,17 @@ find_package(OpenGL REQUIRED)
 set(INCLUDES_DIR include)
 set(
     INCLUDES
-    ${INCLUDES_DIR}/engine.hpp
-    ${INCLUDES_DIR}/mesh.hpp
     ${INCLUDES_DIR}/camera.hpp
+    ${INCLUDES_DIR}/engine.hpp
+    ${INCLUDES_DIR}/game.hpp
+    ${INCLUDES_DIR}/mesh.hpp
 )
 set(
     SOURCES
-    src/engine.cpp
-    src/mesh.cpp
     src/camera.cpp
+    src/engine.cpp
+    src/game.cpp
+    src/mesh.cpp
 )
 
 add_library(engine ${SOURCES} ${INCLUDES})
