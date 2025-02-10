@@ -10,7 +10,7 @@
 #include <iostream>
 #include <vector>
 
-namespace NMesh {
+namespace NGameEngine {
 
 static const glm::vec4 kDefaultVertexColor = {1.0f, 0.5f, 0.2f, 1.0f};
 
@@ -332,4 +332,4 @@ std::unique_ptr<IMesh> CreateBallMesh() {
     );
 }
 
-}  // namespace NMesh
+}  // namespace NGameEngine

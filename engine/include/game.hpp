@@ -1,6 +1,6 @@
 #pragma once
 
-namespace NGame {
+namespace NGameEngine {
 
 class IGame {
   public:
@@ -12,4 +12,4 @@ class IGame {
     virtual void deinit();
 };
 
-}  // namespace NGame
+}  // namespace NGameEngine

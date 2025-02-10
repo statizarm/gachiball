@@ -5,7 +5,7 @@
 
 namespace NGachiBall {
 
-class TGame : public NGame::IGame {
+class TGame : public NGameEngine::IGame {
   public:
     TGame(NGameEngine::TGameEngine* engine);
     ~TGame() override = default;
@@ -15,7 +15,7 @@ class TGame : public NGame::IGame {
     void deinit() override;
 
   private:
-    std::unique_ptr<NCamera::ICamera> camera_;
+    std::unique_ptr<NGameEngine::ICamera> camera_;
 
     NGameEngine::TGameEngine* engine_;
 };

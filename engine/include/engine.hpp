@@ -18,9 +18,9 @@ class TGameEngine {
 
     void init();
     void deinit();
-    void run(NGame::IGame* game);
+    void run(NGameEngine::IGame* game);
 
-    void bindCamera(const NCamera::ICamera* camera);
+    void bindCamera(const NGameEngine::ICamera* camera);
 
   private:
     std::unique_ptr<TGameEngineImpl> impl_;

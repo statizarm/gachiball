@@ -13,7 +13,7 @@ void TGame::init() {
     assert(!camera_);
 
     camera_ =
-        NCamera::CreateRotatingCamera({0, 0, 0}, glm::radians(30.f), 20.f);
+        NGameEngine::CreateRotatingCamera({0, 0, 0}, glm::radians(30.f), 20.f);
     engine_->bindCamera(camera_.get());
 }
 

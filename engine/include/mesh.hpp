@@ -5,7 +5,7 @@
 #include <glm/vec4.hpp>
 #include <memory>
 
-namespace NMesh {
+namespace NGameEngine {
 
 struct TMeshData {
     glm::vec3 position;
@@ -21,4 +21,4 @@ class IMesh {
 std::unique_ptr<IMesh> CreatePlatformMesh();
 std::unique_ptr<IMesh> CreateBallMesh();
 
-}  // namespace NMesh
+}  // namespace NGameEngine

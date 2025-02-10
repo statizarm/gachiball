@@ -4,7 +4,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace NCamera {
+namespace NGameEngine {
 
 namespace {
 
@@ -31,7 +31,7 @@ glm::mat4x4 TRotatingCamera::view() const {
 
 }  // namespace
 
-std::unique_ptr<NCamera::ICamera> CreateRotatingCamera(
+std::unique_ptr<ICamera> CreateRotatingCamera(
     glm::vec3 lookTo, float angle, float distance
 ) {
     auto view = glm::lookAt(
@@ -45,4 +45,4 @@ std::unique_ptr<NCamera::ICamera> CreateRotatingCamera(
     return std::make_unique<TRotatingCamera>(std::move(view));
 }
 
-}  // namespace NCamera
+}  // namespace NGameEngine

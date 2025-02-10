@@ -1,9 +1,9 @@
 #include "game.hpp"
 
-namespace NGame {
+namespace NGameEngine {
 
 void IGame::init() {}
 
 void IGame::deinit() {}
 
-}  // namespace NGame
+}  // namespace NGameEngine

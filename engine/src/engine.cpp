@@ -30,15 +30,15 @@ class TGameEngineImpl {
 
     void init();
     void deinit();
-    void run(NGame::IGame *game);
+    void run(NGameEngine::IGame *game);
 
-    void bindCamera(const NCamera::ICamera *camera);
+    void bindCamera(const NGameEngine::ICamera *camera);
 
   private:
     GLFWwindow *window_;
 
-    std::vector<std::unique_ptr<NMesh::IMesh>> meshes_;
-    const NCamera::ICamera *camera_;
+    std::vector<std::unique_ptr<NGameEngine::IMesh>> meshes_;
+    const NGameEngine::ICamera *camera_;
 };
 
 void TGameEngineImpl::init() {
@@ -75,9 +75,9 @@ void TGameEngineImpl::deinit() {
     glfwTerminate();
 }
 
-void TGameEngineImpl::run(NGame::IGame *game) {
-    meshes_.emplace_back(std::move(NMesh::CreatePlatformMesh()));
-    meshes_.emplace_back(std::move(NMesh::CreateBallMesh()));
+void TGameEngineImpl::run(NGameEngine::IGame *game) {
+    meshes_.emplace_back(std::move(NGameEngine::CreatePlatformMesh()));
+    meshes_.emplace_back(std::move(NGameEngine::CreateBallMesh()));
 
     glEnable(GL_DEPTH_TEST);
     game->init();
@@ -116,7 +116,7 @@ void TGameEngineImpl::run(NGame::IGame *game) {
     game->deinit();
 }
 
-void TGameEngineImpl::bindCamera(const NCamera::ICamera *camera) {
+void TGameEngineImpl::bindCamera(const NGameEngine::ICamera *camera) {
     camera_ = camera;
 }
 
@@ -139,13 +139,13 @@ void TGameEngine::deinit() {
     impl_.reset();
 }
 
-void TGameEngine::run(NGame::IGame *game) {
+void TGameEngine::run(NGameEngine::IGame *game) {
     assert(impl_);
 
     impl_->run(game);
 }
 
-void TGameEngine::bindCamera(const NCamera::ICamera *camera) {
+void TGameEngine::bindCamera(const NGameEngine::ICamera *camera) {
     assert(impl_);
 
     impl_->bindCamera(camera);
