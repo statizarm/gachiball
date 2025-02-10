@@ -14,14 +14,6 @@
 
 namespace NGameEngine {
 
-static void ErrorCallback(int error, const char *description) {
-    std::cerr << "Error: %s\n" << description << std::endl;
-}
-
-static void FrameBufferSizeCallback(GLFWwindow *window, int width, int height) {
-    glViewport(0, 0, width, height);
-}
-
 namespace {
 
 class TGameEngineImpl {
@@ -37,12 +29,30 @@ class TGameEngineImpl {
     void addBody(TBody *body);
     void removeBody(TBody *body);
 
+  public:
+    // NOTE: Various callbacks
+    void frameBufferSizeCallback(GLFWwindow *window, int width, int height);
+
   private:
     GLFWwindow *window_;
+    int window_width_;
+    int window_height_;
 
     std::unordered_set<TBody *> bodies_;
     const ICamera *camera_;
 };
+
+static TGameEngineImpl *gameEngine = nullptr;
+
+static void ErrorCallback(int error, const char *description) {
+    std::cerr << "Error: %s\n" << description << std::endl;
+}
+
+static void FrameBufferSizeCallback(GLFWwindow *window, int width, int height) {
+    assert(gameEngine);
+
+    gameEngine->frameBufferSizeCallback(window, width, height);
+}
 
 void TGameEngineImpl::init() {
     if (!glfwInit()) {
@@ -69,6 +79,9 @@ void TGameEngineImpl::init() {
     }
 
     glfwSetFramebufferSizeCallback(window_, FrameBufferSizeCallback);
+
+    gameEngine = this;
+    glfwGetWindowSize(window_, &window_width_, &window_height_);
 }
 
 void TGameEngineImpl::deinit() {
@@ -76,6 +89,8 @@ void TGameEngineImpl::deinit() {
         glfwDestroyWindow(window_);
     }
     glfwTerminate();
+
+    gameEngine = nullptr;
 }
 
 void TGameEngineImpl::run(IGame *game) {
@@ -85,17 +100,15 @@ void TGameEngineImpl::run(IGame *game) {
     while (!glfwWindowShouldClose(window_)) {
         ///////////////////////////////////////////////////////////////////////
         // NOTE: DRAW
-        int width, height;
-        glfwGetWindowSize(window_, &width, &height);
-
         glClearColor(.2f, .3f, .3f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // auto model = glm::identity<glm::mat4x4>();
         auto view = camera_->view();
         auto projection = glm::perspective(
             glm::radians(45.f),
-            static_cast<float>(width) / static_cast<float>(height), 0.1f, 100.f
+            static_cast<float>(window_width_) /
+                static_cast<float>(window_height_),
+            0.1f, 100.f
         );
         auto vp = projection * view;
 
@@ -123,6 +136,14 @@ void TGameEngineImpl::bindCamera(const ICamera *camera) { camera_ = camera; }
 void TGameEngineImpl::addBody(TBody *body) { bodies_.insert(body); }
 
 void TGameEngineImpl::removeBody(TBody *body) { bodies_.erase(body); }
+
+void TGameEngineImpl::frameBufferSizeCallback(
+    GLFWwindow *window, int width, int height
+) {
+    glViewport(0, 0, width, height);
+    window_width_ = width;
+    window_height_ = height;
+}
 
 }  // namespace
 
