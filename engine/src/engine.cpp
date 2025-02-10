@@ -9,7 +9,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <unordered_set>
-#include <vector>
 
 #include "mesh.hpp"
 
@@ -31,9 +30,9 @@ class TGameEngineImpl {
 
     void init();
     void deinit();
-    void run(NGameEngine::IGame *game);
+    void run(IGame *game);
 
-    void bindCamera(const NGameEngine::ICamera *camera);
+    void bindCamera(const ICamera *camera);
 
     void addBody(TBody *body);
     void removeBody(TBody *body);
@@ -42,7 +41,7 @@ class TGameEngineImpl {
     GLFWwindow *window_;
 
     std::unordered_set<TBody *> bodies_;
-    const NGameEngine::ICamera *camera_;
+    const ICamera *camera_;
 };
 
 void TGameEngineImpl::init() {
@@ -79,7 +78,7 @@ void TGameEngineImpl::deinit() {
     glfwTerminate();
 }
 
-void TGameEngineImpl::run(NGameEngine::IGame *game) {
+void TGameEngineImpl::run(IGame *game) {
     glEnable(GL_DEPTH_TEST);
     game->init();
     auto start = glfwGetTime();
@@ -119,9 +118,7 @@ void TGameEngineImpl::run(NGameEngine::IGame *game) {
     game->deinit();
 }
 
-void TGameEngineImpl::bindCamera(const NGameEngine::ICamera *camera) {
-    camera_ = camera;
-}
+void TGameEngineImpl::bindCamera(const ICamera *camera) { camera_ = camera; }
 
 void TGameEngineImpl::addBody(TBody *body) { bodies_.insert(body); }
 
@@ -146,13 +143,13 @@ void TGameEngine::deinit() {
     impl_.reset();
 }
 
-void TGameEngine::run(NGameEngine::IGame *game) {
+void TGameEngine::run(IGame *game) {
     assert(impl_);
 
     impl_->run(game);
 }
 
-void TGameEngine::bindCamera(const NGameEngine::ICamera *camera) {
+void TGameEngine::bindCamera(const ICamera *camera) {
     assert(impl_);
 
     impl_->bindCamera(camera);
