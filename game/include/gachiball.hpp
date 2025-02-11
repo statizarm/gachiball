@@ -17,6 +17,9 @@ class TGame : public NGameEngine::IGame {
     void deinit() override;
 
   private:
+    void restart();
+
+  private:
     NGameEngine::TBody platform_;
     NGameEngine::TBody ball_;
 

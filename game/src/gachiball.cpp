@@ -43,12 +43,19 @@ void TGame::init() {
     camera_ =
         NGameEngine::CreateRotatingCamera({0, 0, 0}, glm::radians(30.f), 20.f);
     engine_->bindCamera(camera_.get());
+
+    engine_->registerInputCallback([this]() { this->restart(); });
 }
 
 void TGame::update(float dt) {
     using namespace std::chrono_literals;
 
     std::this_thread::sleep_for(16ms);
+}
+
+void TGame::restart() {
+    deinit();
+    init();
 }
 
 }  // namespace NGachiBall

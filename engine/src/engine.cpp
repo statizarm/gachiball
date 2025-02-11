@@ -8,6 +8,7 @@
 #include <cassert>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
+#include <unordered_map>
 #include <unordered_set>
 
 #include "mesh.hpp"
@@ -29,14 +30,21 @@ class TGameEngineImpl {
     void addBody(TBody *body);
     void removeBody(TBody *body);
 
+    void registerInputCallback(TInputCallback callback);
+
   public:
     // NOTE: Various callbacks
     void frameBufferSizeCallback(GLFWwindow *window, int width, int height);
+    void keyCallback(
+        GLFWwindow *window, int key, int scancode, int action, int mods
+    );
 
   private:
     GLFWwindow *window_;
     int window_width_;
     int window_height_;
+
+    TInputCallback input_callback_;
 
     std::unordered_set<TBody *> bodies_;
     const ICamera *camera_;
@@ -52,6 +60,14 @@ static void FrameBufferSizeCallback(GLFWwindow *window, int width, int height) {
     assert(gameEngine);
 
     gameEngine->frameBufferSizeCallback(window, width, height);
+}
+
+static void KeyCallback(
+    GLFWwindow *window, int key, int scancode, int action, int mods
+) {
+    assert(gameEngine);
+
+    gameEngine->keyCallback(window, key, scancode, action, mods);
 }
 
 void TGameEngineImpl::init() {
@@ -79,6 +95,8 @@ void TGameEngineImpl::init() {
     }
 
     glfwSetFramebufferSizeCallback(window_, FrameBufferSizeCallback);
+
+    glfwSetKeyCallback(window_, KeyCallback);
 
     gameEngine = this;
     glfwGetWindowSize(window_, &window_width_, &window_height_);
@@ -137,12 +155,24 @@ void TGameEngineImpl::addBody(TBody *body) { bodies_.insert(body); }
 
 void TGameEngineImpl::removeBody(TBody *body) { bodies_.erase(body); }
 
+void TGameEngineImpl::registerInputCallback(TInputCallback callback) {
+    input_callback_ = std::move(callback);
+}
+
 void TGameEngineImpl::frameBufferSizeCallback(
     GLFWwindow *window, int width, int height
 ) {
     glViewport(0, 0, width, height);
     window_width_ = width;
     window_height_ = height;
+}
+
+void TGameEngineImpl::keyCallback(
+    GLFWwindow *window, int key, int scancode, int action, int mods
+) {
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
+        input_callback_();
+    }
 }
 
 }  // namespace
@@ -188,4 +218,9 @@ void TGameEngine::removeBody(TBody *body) {
     impl_->removeBody(body);
 }
 
+void TGameEngine::registerInputCallback(TInputCallback callback) {
+    assert(impl_);
+
+    impl_->registerInputCallback(std::move(callback));
+}
 };  // namespace NGameEngine
