@@ -8,18 +8,17 @@
 #include <cassert>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
-#include <unordered_map>
 #include <unordered_set>
 
+#include "event_dispatcher.hpp"
+#include "input_engine.hpp"
 #include "mesh.hpp"
 
 namespace NGameEngine {
 
-namespace {
-
 class TGameEngineImpl {
   public:
-    TGameEngineImpl() = default;
+    TGameEngineImpl();
 
     void init();
     void deinit();
@@ -30,44 +29,45 @@ class TGameEngineImpl {
     void addBody(TBody *body);
     void removeBody(TBody *body);
 
-    void registerInputCallback(TInputCallback callback);
+    void registerInputCallback(
+        TInputEventType event_type, TInputCallback callback
+    );
 
   public:
     // NOTE: Various callbacks
     void frameBufferSizeCallback(GLFWwindow *window, int width, int height);
-    void keyCallback(
-        GLFWwindow *window, int key, int scancode, int action, int mods
-    );
 
   private:
     GLFWwindow *window_;
     int window_width_;
     int window_height_;
 
-    TInputCallback input_callback_;
+    TInputEngine input_engine_;
+    TEventDispatcher event_dispatcher_;
 
     std::unordered_set<TBody *> bodies_;
     const ICamera *camera_;
 };
 
-static TGameEngineImpl *gameEngine = nullptr;
+TGameEngineImpl::TGameEngineImpl()
+    : window_(nullptr)
+    , window_height_(0)
+    , window_width_(0)
+    , input_engine_()
+    , event_dispatcher_()
+    , bodies_()
+    , camera_() {}
+
+static TGameEngineImpl *game_engine = nullptr;
 
 static void ErrorCallback(int error, const char *description) {
     std::cerr << "Error: %s\n" << description << std::endl;
 }
 
 static void FrameBufferSizeCallback(GLFWwindow *window, int width, int height) {
-    assert(gameEngine);
+    assert(game_engine);
 
-    gameEngine->frameBufferSizeCallback(window, width, height);
-}
-
-static void KeyCallback(
-    GLFWwindow *window, int key, int scancode, int action, int mods
-) {
-    assert(gameEngine);
-
-    gameEngine->keyCallback(window, key, scancode, action, mods);
+    game_engine->frameBufferSizeCallback(window, width, height);
 }
 
 void TGameEngineImpl::init() {
@@ -96,10 +96,10 @@ void TGameEngineImpl::init() {
 
     glfwSetFramebufferSizeCallback(window_, FrameBufferSizeCallback);
 
-    glfwSetKeyCallback(window_, KeyCallback);
-
-    gameEngine = this;
     glfwGetWindowSize(window_, &window_width_, &window_height_);
+    input_engine_.init(window_, &event_dispatcher_);
+
+    game_engine = this;
 }
 
 void TGameEngineImpl::deinit() {
@@ -107,8 +107,6 @@ void TGameEngineImpl::deinit() {
         glfwDestroyWindow(window_);
     }
     glfwTerminate();
-
-    gameEngine = nullptr;
 }
 
 void TGameEngineImpl::run(IGame *game) {
@@ -155,8 +153,15 @@ void TGameEngineImpl::addBody(TBody *body) { bodies_.insert(body); }
 
 void TGameEngineImpl::removeBody(TBody *body) { bodies_.erase(body); }
 
-void TGameEngineImpl::registerInputCallback(TInputCallback callback) {
-    input_callback_ = std::move(callback);
+void TGameEngineImpl::registerInputCallback(
+    TInputEventType event_type, TInputCallback callback
+) {
+    event_dispatcher_.registerEventHandler(
+        MakeEventType(std::move(event_type)),
+        [callback = std::move(callback)](TEvent event) {
+            callback(std::get<TInputEvent>(event));
+        }
+    );
 }
 
 void TGameEngineImpl::frameBufferSizeCallback(
@@ -166,16 +171,6 @@ void TGameEngineImpl::frameBufferSizeCallback(
     window_width_ = width;
     window_height_ = height;
 }
-
-void TGameEngineImpl::keyCallback(
-    GLFWwindow *window, int key, int scancode, int action, int mods
-) {
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
-        input_callback_();
-    }
-}
-
-}  // namespace
 
 TGameEngine::TGameEngine() {}
 
@@ -218,9 +213,12 @@ void TGameEngine::removeBody(TBody *body) {
     impl_->removeBody(body);
 }
 
-void TGameEngine::registerInputCallback(TInputCallback callback) {
+void TGameEngine::registerInputCallback(
+    TInputEventType event_type, TInputCallback callback
+) {
     assert(impl_);
 
-    impl_->registerInputCallback(std::move(callback));
+    impl_->registerInputCallback(std::move(event_type), std::move(callback));
 }
+
 };  // namespace NGameEngine

@@ -19,6 +19,8 @@ class TGame : public NGameEngine::IGame {
   private:
     void restart();
 
+    void initKeyMap();
+
   private:
     NGameEngine::TBody platform_;
     NGameEngine::TBody ball_;

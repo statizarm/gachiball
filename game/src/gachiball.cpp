@@ -44,7 +44,7 @@ void TGame::init() {
         NGameEngine::CreateRotatingCamera({0, 0, 0}, glm::radians(30.f), 20.f);
     engine_->bindCamera(camera_.get());
 
-    engine_->registerInputCallback([this]() { this->restart(); });
+    initKeyMap();
 }
 
 void TGame::update(float dt) {
@@ -56,6 +56,19 @@ void TGame::update(float dt) {
 void TGame::restart() {
     deinit();
     init();
+}
+
+void TGame::initKeyMap() {
+    using namespace NGameEngine;
+
+    engine_->registerInputCallback(
+        NGameEngine::TInputEventType{
+            .input_device = EInputDevice::KEYBOARD,
+            .key = EKey::SPACE,
+            .key_action = EKeyAction::PRESSED,
+        },
+        [this](TInputEvent) { this->restart(); }
+    );
 }
 
 }  // namespace NGachiBall

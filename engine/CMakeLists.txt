@@ -26,14 +26,20 @@ set(
     ${INCLUDES_DIR}/body.hpp
     ${INCLUDES_DIR}/camera.hpp
     ${INCLUDES_DIR}/engine.hpp
+    ${INCLUDES_DIR}/event.hpp
+    ${INCLUDES_DIR}/event_dispatcher.hpp
     ${INCLUDES_DIR}/game.hpp
+    ${INCLUDES_DIR}/input_engine.hpp
+    ${INCLUDES_DIR}/input_event.hpp
     ${INCLUDES_DIR}/mesh.hpp
 )
 set(
     SOURCES
     src/camera.cpp
     src/engine.cpp
+    src/event_dispatcher.cpp
     src/game.cpp
+    src/input_engine.cpp
     src/mesh.cpp
 )
 

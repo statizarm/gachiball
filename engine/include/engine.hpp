@@ -6,14 +6,13 @@
 #include "body.hpp"
 #include "camera.hpp"
 #include "game.hpp"
+#include "input_event.hpp"
 
 namespace NGameEngine {
 
-using TInputCallback = std::function<void()>;
+using TInputCallback = std::function<void(TInputEvent)>;
 
-namespace {
 class TGameEngineImpl;
-}
 
 class TGameEngine {
   public:
@@ -24,12 +23,15 @@ class TGameEngine {
     void deinit();
     void run(IGame* game);
 
+  public:
     void bindCamera(const ICamera* camera);
 
     void addBody(TBody* body);
     void removeBody(TBody* body);
 
-    void registerInputCallback(TInputCallback callback);
+    void registerInputCallback(
+        TInputEventType inputEventType, TInputCallback callback
+    );
 
   private:
     std::unique_ptr<TGameEngineImpl> impl_;
