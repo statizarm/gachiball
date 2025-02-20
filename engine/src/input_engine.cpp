@@ -1,43 +1,37 @@
 #include "input_engine.hpp"
 
+#include <GLFW/glfw3.h>
+
 #include <cassert>
 
 namespace NGameEngine {
 
 namespace {
 
-static void KeyCallback(
-    GLFWwindow* window, int key, int scancode, int action, int mods
-);
-static void MouseKeyCallback(GLFWwindow* window, int key, int action, int mods);
-static void CursorPositionCallback(
-    GLFWwindow* window, double xpos, double ypos
-);
+static void KeyCallback(void*, int key, int scancode, int action, int mods);
+static void MouseKeyCallback(void*, int key, int action, int mods);
+static void CursorPositionCallback(void*, double xpos, double ypos);
 
 }  // namespace
 
 class TInputEngine::TImpl {
   public:
-    TImpl(GLFWwindow* window, TEventDispatcher* event_dispatcher);
+    TImpl(TWindow* window, TEventDispatcher* event_dispatcher);
 
     void init();
     void deinit();
 
   public:
-    void keyCallback(
-        GLFWwindow* window, int key, int scancode, int action, int mods
-    );
-    void cursorPositionCallback(GLFWwindow* window, double xpos, double ypos);
-    void mouseKeyCallback(GLFWwindow* window, int key, int action, int mods);
+    void keyCallback(int key, int scancode, int action, int mods);
+    void cursorPositionCallback(double xpos, double ypos);
+    void mouseKeyCallback(int key, int action, int mods);
 
   private:
     TEventDispatcher* event_dispatcher_;
-    GLFWwindow* window_;
+    TWindow* window_;
 };
 
-TInputEngine::TImpl::TImpl(
-    GLFWwindow* window, TEventDispatcher* event_dispatcher
-)
+TInputEngine::TImpl::TImpl(TWindow* window, TEventDispatcher* event_dispatcher)
     : window_(window), event_dispatcher_(event_dispatcher) {
 }
 
@@ -46,15 +40,15 @@ TInputEngine::TImpl::TImpl(
 ///////////////////////////////////////////////////////////////////////////////
 
 void TInputEngine::TImpl::init() {
-    glfwSetKeyCallback(window_, KeyCallback);
-    glfwSetMouseButtonCallback(window_, MouseKeyCallback);
-    glfwSetCursorPosCallback(window_, CursorPositionCallback);
+    window_->registerKeyboardKeyCallback(KeyCallback);
+    window_->registerMouseKeyCallback(MouseKeyCallback);
+    window_->registerCursorPositionCallback(CursorPositionCallback);
 }
 
 void TInputEngine::TImpl::deinit() {
-    glfwSetKeyCallback(window_, NULL);
-    glfwSetMouseButtonCallback(window_, NULL);
-    glfwSetCursorPosCallback(window_, NULL);
+    window_->registerKeyboardKeyCallback(NULL);
+    window_->registerMouseKeyCallback(NULL);
+    window_->registerCursorPositionCallback(NULL);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -124,7 +118,7 @@ EKeyAction TranslateGLFWKeyAction(int action) {
 ////////////////////////////////////////////////////////////////////////////////
 
 void TInputEngine::TImpl::keyCallback(
-    GLFWwindow* window, int key, int scancode, int action, int mods
+    int key, int scancode, int action, int mods
 ) {
     auto input_event = TInputEvent{
         .type =
@@ -138,9 +132,7 @@ void TInputEngine::TImpl::keyCallback(
     event_dispatcher_->raiseEvent(MakeEvent(input_event));
 }
 
-void TInputEngine::TImpl::mouseKeyCallback(
-    GLFWwindow* window, int key, int action, int mods
-) {
+void TInputEngine::TImpl::mouseKeyCallback(int key, int action, int mods) {
     auto input_event = TInputEvent{
         .type =
             {
@@ -153,9 +145,7 @@ void TInputEngine::TImpl::mouseKeyCallback(
     event_dispatcher_->raiseEvent(MakeEvent(std::move(input_event)));
 }
 
-void TInputEngine::TImpl::cursorPositionCallback(
-    GLFWwindow* window, double xpos, double ypos
-) {
+void TInputEngine::TImpl::cursorPositionCallback(double xpos, double ypos) {
     auto input_event = TInputEvent{
         .type =
             {
@@ -174,28 +164,22 @@ void TInputEngine::TImpl::cursorPositionCallback(
 namespace {
 static TInputEngine::TImpl* input_engine;
 
-static void KeyCallback(
-    GLFWwindow* window, int key, int scancode, int action, int mods
-) {
+static void KeyCallback(void*, int key, int scancode, int action, int mods) {
     assert(input_engine);
 
-    input_engine->keyCallback(window, key, scancode, action, mods);
+    input_engine->keyCallback(key, scancode, action, mods);
 }
 
-static void MouseKeyCallback(
-    GLFWwindow* window, int key, int action, int mods
-) {
+static void MouseKeyCallback(void*, int key, int action, int mods) {
     assert(input_engine);
 
-    input_engine->mouseKeyCallback(window, key, action, mods);
+    input_engine->mouseKeyCallback(key, action, mods);
 }
 
-static void CursorPositionCallback(
-    GLFWwindow* window, double xpos, double ypos
-) {
+static void CursorPositionCallback(void*, double xpos, double ypos) {
     assert(input_engine);
 
-    input_engine->cursorPositionCallback(window, xpos, ypos);
+    input_engine->cursorPositionCallback(xpos, ypos);
 }
 
 }  // namespace
@@ -206,9 +190,7 @@ TInputEngine::TInputEngine()
 TInputEngine::~TInputEngine() {
 }
 
-void TInputEngine::init(
-    GLFWwindow* window, TEventDispatcher* event_dispatcher
-) {
+void TInputEngine::init(TWindow* window, TEventDispatcher* event_dispatcher) {
     assert(!impl_);
 
     impl_ = std::make_unique<TInputEngine::TImpl>(window, event_dispatcher);

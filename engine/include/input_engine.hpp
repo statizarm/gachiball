@@ -1,10 +1,9 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
-
 #include <memory>
 
 #include "event_dispatcher.hpp"
+#include "window.hpp"
 
 namespace NGameEngine {
 
@@ -16,8 +15,8 @@ class TInputEngine {
     TInputEngine();
     ~TInputEngine();
 
-    // register callbacks that calls game_engine handlers
-    void init(GLFWwindow* window, TEventDispatcher* event_dispatcher);
+    // register callbacks
+    void init(TWindow* window, TEventDispatcher* event_dispatcher);
     // unregister callbacks
     void deinit();
 

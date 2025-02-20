@@ -32,6 +32,7 @@ set(
     ${INCLUDES_DIR}/input_engine.hpp
     ${INCLUDES_DIR}/input_event.hpp
     ${INCLUDES_DIR}/mesh.hpp
+    ${INCLUDES_DIR}/window.hpp
 )
 set(
     SOURCES
@@ -41,6 +42,7 @@ set(
     src/game.cpp
     src/input_engine.cpp
     src/mesh.cpp
+    src/window.cpp
 )
 
 add_library(engine ${SOURCES} ${INCLUDES})
