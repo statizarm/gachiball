@@ -1,8 +1,6 @@
 #include "gachiball.hpp"
 
 #include <glm/trigonometric.hpp>
-#include <iostream>
-#include <thread>
 
 namespace NGachiBall {
 
