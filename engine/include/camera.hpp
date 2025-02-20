@@ -8,6 +8,7 @@ namespace NGameEngine {
 class ICamera {
   public:
     virtual ~ICamera() = default;
+
     virtual glm::mat4x4 view() const = 0;
 };
 

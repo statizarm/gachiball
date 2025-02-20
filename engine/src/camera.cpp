@@ -21,7 +21,8 @@ class TRotatingCamera : public ICamera {
 };
 
 TRotatingCamera::TRotatingCamera(glm::mat4x4 view)
-    : initView_(view), initTime_(glfwGetTime()) {}
+    : initView_(view), initTime_(glfwGetTime()) {
+}
 
 glm::mat4x4 TRotatingCamera::view() const {
     float angle = glfwGetTime() - initTime_;
@@ -39,7 +40,8 @@ std::unique_ptr<ICamera> CreateRotatingCamera(
             glm::vec3{
                 0, glm::sin(angle) * distance, glm::cos(angle) * distance
             },
-        lookTo, glm::vec3{0.f, 1.f, 0.f}
+        lookTo,
+        glm::vec3{0.f, 1.f, 0.f}
     );
 
     return std::make_unique<TRotatingCamera>(std::move(view));

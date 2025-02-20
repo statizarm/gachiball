@@ -15,6 +15,7 @@ struct TMeshData {
 class IMesh {
   public:
     virtual ~IMesh() = default;
+
     virtual void draw(const glm::mat4& mvp) = 0;
 };
 

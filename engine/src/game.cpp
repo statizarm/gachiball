@@ -2,8 +2,10 @@
 
 namespace NGameEngine {
 
-void IGame::init() {}
+void IGame::init() {
+}
 
-void IGame::deinit() {}
+void IGame::deinit() {
+}
 
 }  // namespace NGameEngine

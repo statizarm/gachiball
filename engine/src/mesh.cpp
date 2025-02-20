@@ -129,8 +129,8 @@ static inline GLuint CreateFragmentShader() {
 }
 
 GLuint CreateShaderProgram() {
-    GLuint shader_program = glCreateProgram();
-    GLuint vertex_shader = CreateVertexShader();
+    GLuint shader_program  = glCreateProgram();
+    GLuint vertex_shader   = CreateVertexShader();
     GLuint fragment_shader = CreateFragmentShader();
 
     glAttachShader(shader_program, vertex_shader);
@@ -164,24 +164,36 @@ std::unique_ptr<IMesh> CreatePlatformMesh() {
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(
-        GL_ARRAY_BUFFER, sizeof(kPlatformVertexData),
-        static_cast<const void*>(kPlatformVertexData), GL_STATIC_DRAW
+        GL_ARRAY_BUFFER,
+        sizeof(kPlatformVertexData),
+        static_cast<const void*>(kPlatformVertexData),
+        GL_STATIC_DRAW
     );
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(
-        GL_ELEMENT_ARRAY_BUFFER, sizeof(kPlatformVertices),
-        static_cast<const void*>(kPlatformVertices), GL_STATIC_DRAW
+        GL_ELEMENT_ARRAY_BUFFER,
+        sizeof(kPlatformVertices),
+        static_cast<const void*>(kPlatformVertices),
+        GL_STATIC_DRAW
     );
 
     GLint vertex_location = glGetAttribLocation(shader_program, "position");
     glVertexAttribPointer(
-        vertex_location, 3, GL_FLOAT, GL_FALSE, sizeof(TMeshData),
+        vertex_location,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(TMeshData),
         reinterpret_cast<void*>(offsetof(TMeshData, position))
     );
     glEnableVertexAttribArray(vertex_location);
     GLint colorLocation = glGetAttribLocation(shader_program, "color");
     glVertexAttribPointer(
-        colorLocation, 4, GL_FLOAT, GL_TRUE, sizeof(TMeshData),
+        colorLocation,
+        4,
+        GL_FLOAT,
+        GL_TRUE,
+        sizeof(TMeshData),
         reinterpret_cast<void*>(offsetof(TMeshData, color))
     );
     glEnableVertexAttribArray(colorLocation);
@@ -189,7 +201,8 @@ std::unique_ptr<IMesh> CreatePlatformMesh() {
     glBindVertexArray(0);
 
     return std::make_unique<TMesh>(
-        vao, shader_program,
+        vao,
+        shader_program,
         sizeof(kPlatformVertices) / sizeof(*kPlatformVertices) * 3
     );
 }
@@ -200,31 +213,31 @@ GenerateBallMeshData(float radius) {
     std::vector<std ::array<GLuint, 3>> vertices;
 
     static constexpr glm::vec3 kBaseSphereColor = {0.2f, 0.5f, 1.0f};
-    static constexpr int kAngleStep = 15;
-    static constexpr int kRowCount = 180 / kAngleStep - 1;
-    static constexpr int kPointsPerRow = 360 / kAngleStep;
+    static constexpr int kAngleStep             = 15;
+    static constexpr int kRowCount              = 180 / kAngleStep - 1;
+    static constexpr int kPointsPerRow          = 360 / kAngleStep;
 
     mesh_data.resize(kPointsPerRow * kRowCount + 2);
     mesh_data[0] = TMeshData{
         .position = glm::vec3{0.f, radius, 0.f},
-        .color = glm::vec4(kBaseSphereColor, 1.f),
+        .color    = glm::vec4(kBaseSphereColor, 1.f),
     };
 
     for (int i = 0; i < kRowCount; ++i) {
-        int theta = (i + 1) * kAngleStep;
+        int theta    = (i + 1) * kAngleStep;
         float coordY = glm::cos(glm::radians(static_cast<float>(theta)));
-        int alpha = 0;
+        int alpha    = 0;
         for (int j = 1; j <= kPointsPerRow; ++j) {
             float coordX = glm::sin(glm::radians(static_cast<float>(theta))) *
                            glm::sin(glm::radians(static_cast<float>(alpha)));
             float coordZ = glm::sin(glm::radians(static_cast<float>(theta))) *
                            glm::cos(glm::radians(static_cast<float>(alpha)));
 
-            auto color = kBaseSphereColor;
-            color[(i + j) % 3] = color[i * j % 3];
+            auto color                       = kBaseSphereColor;
+            color[(i + j) % 3]               = color[i * j % 3];
             mesh_data[i * kPointsPerRow + j] = TMeshData{
                 .position = radius * glm::vec3(coordX, coordY, coordZ),
-                .color = glm::vec4(color, 1.f),
+                .color    = glm::vec4(color, 1.f),
             };
 
             alpha += kAngleStep;
@@ -232,7 +245,7 @@ GenerateBallMeshData(float radius) {
     }
     mesh_data.back() = TMeshData{
         .position = glm::vec3{0.f, -radius, 0.f},
-        .color = glm::vec4(kBaseSphereColor, 1.f),
+        .color    = glm::vec4(kBaseSphereColor, 1.f),
     };
 
     vertices.resize(kPointsPerRow * 2 * kRowCount);
@@ -252,7 +265,8 @@ GenerateBallMeshData(float radius) {
         };
     }
     vertices[2 * kPointsPerRow - 1] = {
-        static_cast<GLuint>(mesh_data.size() - 1), kRowCount * kPointsPerRow,
+        static_cast<GLuint>(mesh_data.size() - 1),
+        kRowCount * kPointsPerRow,
         (kRowCount - 1) * kPointsPerRow + 1
     };
 
@@ -302,25 +316,35 @@ std::unique_ptr<IMesh> CreateBallMesh() {
     glBufferData(
         GL_ARRAY_BUFFER,
         sphereVertexData.size() * sizeof(*sphereVertexData.data()),
-        sphereVertexData.data(), GL_STATIC_DRAW
+        sphereVertexData.data(),
+        GL_STATIC_DRAW
     );
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(
         GL_ELEMENT_ARRAY_BUFFER,
         sphereVertexIndices.size() * sizeof(*sphereVertexIndices.data()),
-        sphereVertexIndices.data(), GL_STATIC_DRAW
+        sphereVertexIndices.data(),
+        GL_STATIC_DRAW
     );
 
     GLint vertex_location = glGetAttribLocation(shader_program, "position");
     glVertexAttribPointer(
-        vertex_location, 3, GL_FLOAT, GL_FALSE, sizeof(TMeshData),
+        vertex_location,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(TMeshData),
         reinterpret_cast<void*>(offsetof(TMeshData, position))
     );
     glEnableVertexAttribArray(vertex_location);
     GLint colorLocation = glGetAttribLocation(shader_program, "color");
     glVertexAttribPointer(
-        colorLocation, 4, GL_FLOAT, GL_TRUE, sizeof(TMeshData),
+        colorLocation,
+        4,
+        GL_FLOAT,
+        GL_TRUE,
+        sizeof(TMeshData),
         reinterpret_cast<void*>(offsetof(TMeshData, color))
     );
     glEnableVertexAttribArray(colorLocation);

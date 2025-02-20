@@ -46,8 +46,8 @@ enum class EKeyAction : size_t {
 
 struct TInputEventType {
     EInputDevice input_device = EInputDevice::UNKNOWN;
-    EKey key = EKey::UNKNOWN;
-    EKeyAction key_action = EKeyAction::UNKNOWN;
+    EKey key                  = EKey::UNKNOWN;
+    EKeyAction key_action     = EKeyAction::UNKNOWN;
 };
 
 struct TKeyboardEventContext {};

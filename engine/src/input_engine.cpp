@@ -32,7 +32,8 @@ class TInputEngine::TImpl {
 TInputEngine::TImpl::TImpl(
     GLFWwindow* window, TEventDispatcher* event_dispatcher
 )
-    : window_(window), event_dispatcher_(event_dispatcher) {}
+    : window_(window), event_dispatcher_(event_dispatcher) {
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // Bind and UnBind methods
@@ -58,11 +59,11 @@ void TInputEngine::TImpl::keyCallback(
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
         input_event = TInputEvent{
             .type =
-                TInputEventType{
-                                .input_device = EInputDevice::KEYBOARD,
-                                .key = EKey::SPACE,
-                                .key_action = EKeyAction::PRESSED,
-                                },
+                {
+                    .input_device = EInputDevice::KEYBOARD,
+                    .key          = EKey::SPACE,
+                    .key_action   = EKeyAction::PRESSED,
+                },
             .context = {}
         };
     }
@@ -83,8 +84,11 @@ static void KeyCallback(
 
 }  // namespace
 
-TInputEngine::TInputEngine() : impl_(nullptr) {}
-TInputEngine::~TInputEngine() {}
+TInputEngine::TInputEngine()
+    : impl_(nullptr) {
+}
+TInputEngine::~TInputEngine() {
+}
 
 void TInputEngine::init(
     GLFWwindow* window, TEventDispatcher* event_dispatcher

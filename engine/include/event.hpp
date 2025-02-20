@@ -7,7 +7,7 @@
 namespace NGameEngine {
 
 using TEventType = std::variant<TInputEventType>;
-using TEvent = std::variant<TInputEvent>;
+using TEvent     = std::variant<TInputEvent>;
 
 template <typename TBaseEventType>
 TEventType MakeEventType(TBaseEventType event_type) {

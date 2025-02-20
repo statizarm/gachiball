@@ -4,7 +4,7 @@ namespace NGameEngine {
 
 class TEventDispatcher::TImpl {
   public:
-    TImpl();
+    TImpl() = default;
 
     void raiseEvent(TEvent event);
     void registerEventHandler(TEventType event, TEventHandler handler);
@@ -19,18 +19,6 @@ class TEventDispatcher::TImpl {
         static_cast<size_t>(EInputDevice::INPUT_DEVICE_COUNT)>
         input_handlers_;
 };
-
-TEventDispatcher::TImpl::TImpl() {
-    /*
-      for (auto& devices : input_handlers_) {
-          for (auto& keys : devices) {
-              for (auto& handler : keys) {
-                  handler = TEventHandler{};
-              }
-          }
-      }
-      */
-}
 
 void TEventDispatcher::TImpl::raiseEvent(TEvent event) {
     if (const auto* input_event = std::get_if<TInputEvent>(&event);
@@ -58,8 +46,12 @@ void TEventDispatcher::TImpl::registerEventHandler(
     }
 }
 
-TEventDispatcher::TEventDispatcher() : impl_(std::make_unique<TImpl>()) {}
-TEventDispatcher::~TEventDispatcher() {}
+TEventDispatcher::TEventDispatcher()
+    : impl_(std::make_unique<TImpl>()) {
+}
+
+TEventDispatcher::~TEventDispatcher() {
+}
 
 void TEventDispatcher::raiseEvent(TEvent event) {
     impl_->raiseEvent(std::move(event));

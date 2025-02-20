@@ -18,7 +18,7 @@ namespace NGameEngine {
 
 class TGameEngineImpl {
   public:
-    TGameEngineImpl();
+    TGameEngineImpl() = default;
 
     void init();
     void deinit();
@@ -48,15 +48,6 @@ class TGameEngineImpl {
     std::unordered_set<TBody *> bodies_;
     const ICamera *camera_;
 };
-
-TGameEngineImpl::TGameEngineImpl()
-    : window_(nullptr)
-    , window_height_(0)
-    , window_width_(0)
-    , input_engine_()
-    , event_dispatcher_()
-    , bodies_()
-    , camera_() {}
 
 static TGameEngineImpl *game_engine = nullptr;
 
@@ -119,12 +110,13 @@ void TGameEngineImpl::run(IGame *game) {
         glClearColor(.2f, .3f, .3f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        auto view = camera_->view();
+        auto view       = camera_->view();
         auto projection = glm::perspective(
             glm::radians(45.f),
             static_cast<float>(window_width_) /
                 static_cast<float>(window_height_),
-            0.1f, 100.f
+            0.1f,
+            100.f
         );
         auto vp = projection * view;
 
@@ -141,17 +133,23 @@ void TGameEngineImpl::run(IGame *game) {
         // NOTE: update game
 
         auto duration = glfwGetTime() - start;
-        start = glfwGetTime();
+        start         = glfwGetTime();
         game->update(duration);
     }
     game->deinit();
 }
 
-void TGameEngineImpl::bindCamera(const ICamera *camera) { camera_ = camera; }
+void TGameEngineImpl::bindCamera(const ICamera *camera) {
+    camera_ = camera;
+}
 
-void TGameEngineImpl::addBody(TBody *body) { bodies_.insert(body); }
+void TGameEngineImpl::addBody(TBody *body) {
+    bodies_.insert(body);
+}
 
-void TGameEngineImpl::removeBody(TBody *body) { bodies_.erase(body); }
+void TGameEngineImpl::removeBody(TBody *body) {
+    bodies_.erase(body);
+}
 
 void TGameEngineImpl::registerInputCallback(
     TInputEventType event_type, TInputCallback callback
@@ -168,13 +166,15 @@ void TGameEngineImpl::frameBufferSizeCallback(
     GLFWwindow *window, int width, int height
 ) {
     glViewport(0, 0, width, height);
-    window_width_ = width;
+    window_width_  = width;
     window_height_ = height;
 }
 
-TGameEngine::TGameEngine() {}
+TGameEngine::TGameEngine() {
+}
 
-TGameEngine::~TGameEngine() {}
+TGameEngine::~TGameEngine() {
+}
 
 void TGameEngine::init() {
     assert(!impl_);

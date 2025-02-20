@@ -5,7 +5,9 @@
 
 namespace NGachiBall {
 
-TGame::TGame(NGameEngine::TGameEngine* engine) : engine_(engine) {}
+TGame::TGame(NGameEngine::TGameEngine* engine)
+    : engine_(engine) {
+}
 
 void TGame::deinit() {
     camera_.reset();
@@ -14,7 +16,7 @@ void TGame::deinit() {
     engine_->removeBody(&ball_);
 
     platform_ = NGameEngine::TBody{};
-    ball_ = NGameEngine::TBody{};
+    ball_     = NGameEngine::TBody{};
 }
 
 void TGame::init() {
@@ -29,13 +31,13 @@ void TGame::init() {
     }
 
     platform_ = NGameEngine::TBody{
-        .mesh = meshes_[0].get(),
+        .mesh     = meshes_[0].get(),
         .position = {0.f, 0.f, 0.f},
     };
     engine_->addBody(&platform_);
 
     ball_ = NGameEngine::TBody{
-        .mesh = meshes_[1].get(),
+        .mesh     = meshes_[1].get(),
         .position = {0.f, 5.f, 0.f},
     };
     engine_->addBody(&ball_);
@@ -64,8 +66,8 @@ void TGame::initKeyMap() {
     engine_->registerInputCallback(
         NGameEngine::TInputEventType{
             .input_device = EInputDevice::KEYBOARD,
-            .key = EKey::SPACE,
-            .key_action = EKeyAction::PRESSED,
+            .key          = EKey::SPACE,
+            .key_action   = EKeyAction::PRESSED,
         },
         [this](TInputEvent) { this->restart(); }
     );
