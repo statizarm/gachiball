@@ -5,9 +5,9 @@
 
 namespace NGachiBall {
 
-static constexpr float kDefaultDistance = 20.f;
+static constexpr float kDefaultDistance = 30.f;
 static constexpr float kInitAlpha       = glm::radians(0.f);
-static constexpr float kInitTheta       = glm::radians(30.f);
+static constexpr float kInitTheta       = glm::radians(60.f);
 static constexpr float kRotationSpeed   = 0.05f;
 
 TPlayerCamera::TPlayerCamera(glm::vec3 look_to)
@@ -24,7 +24,7 @@ glm::mat4x4 TPlayerCamera::view() const {
                                          glm::cos(alpha_) * glm::cos(theta_)
                                      };
 
-    glm::vec3 up = glm::vec3{0.f, 1.f, 0.f};
+    glm::vec3 up = glm::vec3{0.f, glm::cos(theta_), 0.f};
 
     return glm::lookAt(position, look_to_, up);
 }
