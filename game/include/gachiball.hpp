@@ -30,6 +30,9 @@ class TGame : public NGameEngine::IGame {
     std::unique_ptr<NGameEngine::ICamera> camera_;
 
     NGameEngine::TGameEngine* engine_;
+
+    int z_rotation_factor_ = 0;
+    int x_rotation_factor_ = 0;
 };
 
 }  // namespace NGachiBall

@@ -1,6 +1,7 @@
 #include "gachiball.hpp"
 
 #include <glm/trigonometric.hpp>
+#include <iostream>
 #include <thread>
 
 namespace NGachiBall {
@@ -33,12 +34,14 @@ void TGame::init() {
     platform_ = NGameEngine::TBody{
         .mesh     = meshes_[0].get(),
         .position = {0.f, 0.f, 0.f},
+        .rotation = glm::quat_cast(glm::identity<glm::mat4x4>()),
     };
     engine_->addBody(&platform_);
 
     ball_ = NGameEngine::TBody{
         .mesh     = meshes_[1].get(),
         .position = {0.f, 5.f, 0.f},
+        .rotation = glm::quat_cast(glm::identity<glm::mat4x4>()),
     };
     engine_->addBody(&ball_);
 
@@ -50,9 +53,18 @@ void TGame::init() {
 }
 
 void TGame::update(float dt) {
-    using namespace std::chrono_literals;
+    constexpr float kRotationSpeed = 1.f;
 
-    std::this_thread::sleep_for(16ms);
+    platform_.rotation = glm::rotate(
+        platform_.rotation,
+        kRotationSpeed * dt * x_rotation_factor_,
+        {1.f, 0.f, 0.f}
+    );
+    platform_.rotation = glm::rotate(
+        platform_.rotation,
+        kRotationSpeed * dt * z_rotation_factor_,
+        {0.f, 0.f, 1.f}
+    );
 }
 
 void TGame::restart() {
@@ -62,6 +74,7 @@ void TGame::restart() {
 
 void TGame::initKeyMap() {
     using namespace NGameEngine;
+    // TODO: replace this copy paste with .txt file and function aliases
 
     engine_->registerInputCallback(
         NGameEngine::TInputEventType{
@@ -70,6 +83,74 @@ void TGame::initKeyMap() {
             .key_action   = EKeyAction::PRESSED,
         },
         [this](TInputEvent) { this->restart(); }
+    );
+
+    // Rotation around Z axis
+    engine_->registerInputCallback(
+        NGameEngine::TInputEventType{
+            .input_device = EInputDevice::KEYBOARD,
+            .key          = EKey::KEY_A,
+            .key_action   = EKeyAction::PRESSED,
+        },
+        [this](TInputEvent) { this->z_rotation_factor_ += 1; }
+    );
+    engine_->registerInputCallback(
+        NGameEngine::TInputEventType{
+            .input_device = EInputDevice::KEYBOARD,
+            .key          = EKey::KEY_A,
+            .key_action   = EKeyAction::RELEASED,
+        },
+        [this](TInputEvent) { this->z_rotation_factor_ -= 1; }
+    );
+    engine_->registerInputCallback(
+        NGameEngine::TInputEventType{
+            .input_device = EInputDevice::KEYBOARD,
+            .key          = EKey::KEY_D,
+            .key_action   = EKeyAction::PRESSED,
+        },
+        [this](TInputEvent) { this->z_rotation_factor_ -= 1; }
+    );
+    engine_->registerInputCallback(
+        NGameEngine::TInputEventType{
+            .input_device = EInputDevice::KEYBOARD,
+            .key          = EKey::KEY_D,
+            .key_action   = EKeyAction::RELEASED,
+        },
+        [this](TInputEvent) { this->z_rotation_factor_ += 1; }
+    );
+
+    // Rotation around X axis
+    engine_->registerInputCallback(
+        NGameEngine::TInputEventType{
+            .input_device = EInputDevice::KEYBOARD,
+            .key          = EKey::KEY_S,
+            .key_action   = EKeyAction::PRESSED,
+        },
+        [this](TInputEvent) { this->x_rotation_factor_ += 1; }
+    );
+    engine_->registerInputCallback(
+        NGameEngine::TInputEventType{
+            .input_device = EInputDevice::KEYBOARD,
+            .key          = EKey::KEY_S,
+            .key_action   = EKeyAction::RELEASED,
+        },
+        [this](TInputEvent) { this->x_rotation_factor_ -= 1; }
+    );
+    engine_->registerInputCallback(
+        NGameEngine::TInputEventType{
+            .input_device = EInputDevice::KEYBOARD,
+            .key          = EKey::KEY_W,
+            .key_action   = EKeyAction::PRESSED,
+        },
+        [this](TInputEvent) { this->x_rotation_factor_ -= 1; }
+    );
+    engine_->registerInputCallback(
+        NGameEngine::TInputEventType{
+            .input_device = EInputDevice::KEYBOARD,
+            .key          = EKey::KEY_W,
+            .key_action   = EKeyAction::RELEASED,
+        },
+        [this](TInputEvent) { this->x_rotation_factor_ += 1; }
     );
 }
 

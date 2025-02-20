@@ -133,8 +133,9 @@ void TGameEngineImpl::run(IGame *game) {
         // NOTE: update game
 
         auto duration = glfwGetTime() - start;
-        start         = glfwGetTime();
         game->update(duration);
+
+        start = glfwGetTime();
     }
     game->deinit();
 }
