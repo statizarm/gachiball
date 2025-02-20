@@ -151,6 +151,24 @@ void TGame::initKeyMap() {
         },
         [this](TInputEvent) { this->x_rotation_factor_ += 1; }
     );
+
+    // Camera control
+    engine_->registerInputCallback(
+        NGameEngine::TInputEventType{
+            .input_device = EInputDevice::MOUSE,
+            .key          = EKey::MOUSE_LEFT,
+            .key_action   = EKeyAction::PRESSED,
+        },
+        [this](TInputEvent) {}
+    );
+    engine_->registerInputCallback(
+        NGameEngine::TInputEventType{
+            .input_device = EInputDevice::MOUSE,
+            .key          = EKey::MOUSE_LEFT,
+            .key_action   = EKeyAction::RELEASED,
+        },
+        [this](TInputEvent) {}
+    );
 }
 
 }  // namespace NGachiBall

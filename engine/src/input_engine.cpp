@@ -9,6 +9,10 @@ namespace {
 static void KeyCallback(
     GLFWwindow* window, int key, int scancode, int action, int mods
 );
+static void MouseKeyCallback(GLFWwindow* window, int key, int action, int mods);
+static void CursorPositionCallback(
+    GLFWwindow* window, double xpos, double ypos
+);
 
 }  // namespace
 
@@ -16,13 +20,15 @@ class TInputEngine::TImpl {
   public:
     TImpl(GLFWwindow* window, TEventDispatcher* event_dispatcher);
 
-    void bindCallbacks();
-    void unbindCallbacks();
+    void init();
+    void deinit();
 
   public:
     void keyCallback(
         GLFWwindow* window, int key, int scancode, int action, int mods
     );
+    void cursorPositionCallback(GLFWwindow* window, double xpos, double ypos);
+    void mouseKeyCallback(GLFWwindow* window, int key, int action, int mods);
 
   private:
     TEventDispatcher* event_dispatcher_;
@@ -39,12 +45,16 @@ TInputEngine::TImpl::TImpl(
 // Bind and UnBind methods
 ///////////////////////////////////////////////////////////////////////////////
 
-void TInputEngine::TImpl::bindCallbacks() {
+void TInputEngine::TImpl::init() {
     glfwSetKeyCallback(window_, KeyCallback);
+    glfwSetMouseButtonCallback(window_, MouseKeyCallback);
+    glfwSetCursorPosCallback(window_, CursorPositionCallback);
 }
 
-void TInputEngine::TImpl::unbindCallbacks() {
+void TInputEngine::TImpl::deinit() {
     glfwSetKeyCallback(window_, NULL);
+    glfwSetMouseButtonCallback(window_, NULL);
+    glfwSetCursorPosCallback(window_, NULL);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -55,6 +65,9 @@ EKey TranslateGLFWKey(int key) {
 #define CASE_KEY(k)    \
     case GLFW_KEY_##k: \
         return EKey::KEY_##k
+#define CASE_MOUSE_KEY(key)       \
+    case GLFW_MOUSE_BUTTON_##key: \
+        return EKey::MOUSE_##key
 
     switch (key) {
         CASE_KEY(A);
@@ -84,10 +97,14 @@ EKey TranslateGLFWKey(int key) {
         CASE_KEY(Y);
         CASE_KEY(Z);
         CASE_KEY(SPACE);
+        CASE_MOUSE_KEY(LEFT);
+        CASE_MOUSE_KEY(RIGHT);
+        CASE_MOUSE_KEY(MIDDLE);
         default:
             return EKey::UNKNOWN;
     }
 
+#undef CASE_MOUSE_KEY
 #undef CASE_KEY
 }
 
@@ -121,8 +138,40 @@ void TInputEngine::TImpl::keyCallback(
     event_dispatcher_->raiseEvent(MakeEvent(input_event));
 }
 
-namespace {
+void TInputEngine::TImpl::mouseKeyCallback(
+    GLFWwindow* window, int key, int action, int mods
+) {
+    auto input_event = TInputEvent{
+        .type =
+            {
+                .input_device = EInputDevice::MOUSE,
+                .key          = TranslateGLFWKey(key),
+                .key_action   = TranslateGLFWKeyAction(action),
+            },
+        .context = {}
+    };
+    event_dispatcher_->raiseEvent(MakeEvent(std::move(input_event)));
+}
 
+void TInputEngine::TImpl::cursorPositionCallback(
+    GLFWwindow* window, double xpos, double ypos
+) {
+    auto input_event = TInputEvent{
+        .type =
+            {
+                .input_device = EInputDevice::MOUSE,
+                .key          = EKey::MOUSE,
+                .key_action   = EKeyAction::MOVED,
+            },
+    };
+    input_event.context.mouse = {
+        .xpos = xpos,
+        .ypos = ypos,
+    };
+    event_dispatcher_->raiseEvent(MakeEvent(std::move(input_event)));
+}
+
+namespace {
 static TInputEngine::TImpl* input_engine;
 
 static void KeyCallback(
@@ -131,6 +180,22 @@ static void KeyCallback(
     assert(input_engine);
 
     input_engine->keyCallback(window, key, scancode, action, mods);
+}
+
+static void MouseKeyCallback(
+    GLFWwindow* window, int key, int action, int mods
+) {
+    assert(input_engine);
+
+    input_engine->mouseKeyCallback(window, key, action, mods);
+}
+
+static void CursorPositionCallback(
+    GLFWwindow* window, double xpos, double ypos
+) {
+    assert(input_engine);
+
+    input_engine->cursorPositionCallback(window, xpos, ypos);
 }
 
 }  // namespace
@@ -147,7 +212,7 @@ void TInputEngine::init(
     assert(!impl_);
 
     impl_ = std::make_unique<TInputEngine::TImpl>(window, event_dispatcher);
-    impl_->bindCallbacks();
+    impl_->init();
     input_engine = impl_.get();
 }
 
@@ -155,7 +220,7 @@ void TInputEngine::deinit() {
     assert(!!impl_);
 
     input_engine = nullptr;
-    impl_->unbindCallbacks();
+    impl_->deinit();
     impl_.reset();
 }
 

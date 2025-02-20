@@ -83,10 +83,8 @@ struct TInputEventType {
 struct TKeyboardEventContext {};
 
 struct TMouseEventContext {
-    int prev_x;
-    int prev_y;
-    int curr_x;
-    int curr_y;
+    double xpos;
+    double ypos;
 };
 
 struct TInputEventContext {
