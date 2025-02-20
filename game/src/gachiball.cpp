@@ -2,6 +2,8 @@
 
 #include <glm/trigonometric.hpp>
 
+#include "player_camera.hpp"
+
 namespace NGachiBall {
 
 TGame::TGame(NGameEngine::TGameEngine* engine)
@@ -43,8 +45,7 @@ void TGame::init() {
     };
     engine_->addBody(&ball_);
 
-    camera_ =
-        NGameEngine::CreateRotatingCamera({0, 0, 0}, glm::radians(30.f), 20.f);
+    camera_ = std::make_unique<NGachiBall::TPlayerCamera>(glm::vec3{0, 0, 0});
     engine_->bindCamera(camera_.get());
 
     initKeyMap();
