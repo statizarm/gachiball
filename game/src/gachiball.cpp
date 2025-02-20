@@ -66,7 +66,7 @@ void TGame::initKeyMap() {
     engine_->registerInputCallback(
         NGameEngine::TInputEventType{
             .input_device = EInputDevice::KEYBOARD,
-            .key          = EKey::SPACE,
+            .key          = EKey::KEY_SPACE,
             .key_action   = EKeyAction::PRESSED,
         },
         [this](TInputEvent) { this->restart(); }

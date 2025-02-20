@@ -18,15 +18,45 @@ enum class EInputDevice : size_t {
 // Input device keys
 ///////////////////////////////////////////////////
 
+#define KEY(key) KEY_##key
+
 enum class EKey : size_t {
     UNKNOWN = 0,
     MOUSE_LEFT,
     MOUSE_RIGHT,
     MOUSE_MIDDLE,
     MOUSE,
-    SPACE,
+    KEY(A),
+    KEY(B),
+    KEY(C),
+    KEY(D),
+    KEY(E),
+    KEY(F),
+    KEY(G),
+    KEY(H),
+    KEY(I),
+    KEY(J),
+    KEY(K),
+    KEY(L),
+    KEY(M),
+    KEY(N),
+    KEY(O),
+    KEY(P),
+    KEY(Q),
+    KEY(R),
+    KEY(S),
+    KEY(T),
+    KEY(U),
+    KEY(V),
+    KEY(W),
+    KEY(X),
+    KEY(Y),
+    KEY(Z),
+    KEY(SPACE),
     KEY_COUNT,
 };
+
+#undef KEY
 
 ///////////////////////////////////////////////////
 // Input device key actions
