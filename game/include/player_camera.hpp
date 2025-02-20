@@ -18,8 +18,8 @@ class TPlayerCamera : public NGameEngine::ICamera {
     glm::vec3 look_to_;
 
     float distance_;
-    float x_angle_;
-    float y_angle_;
+    float alpha_;
+    float theta_;
 };
 
 }  // namespace NGachiBall

@@ -1,6 +1,9 @@
 #pragma once
 
 #include <cstddef>
+
+#include "window.hpp"
+
 namespace NGameEngine {
 
 ///////////////////////////////////////////////////
@@ -83,8 +86,10 @@ struct TInputEventType {
 struct TKeyboardEventContext {};
 
 struct TMouseEventContext {
-    double xpos;
-    double ypos;
+    double prev_xpos;
+    double prev_ypos;
+    double curr_xpos;
+    double curr_ypos;
 };
 
 struct TInputEventContext {
@@ -92,6 +97,7 @@ struct TInputEventContext {
         TMouseEventContext mouse;
         TKeyboardEventContext keyboard;
     };
+    TWindow* window;
 };
 
 struct TInputEvent {

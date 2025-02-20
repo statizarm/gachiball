@@ -33,6 +33,7 @@ class TGameEngineImpl {
     void registerInputCallback(
         TInputEventType event_type, TInputCallback callback
     );
+    void unregisterInputCallback(TInputEventType event_type);
 
   public:
     // NOTE: Various callbacks
@@ -136,6 +137,12 @@ void TGameEngineImpl::registerInputCallback(
     );
 }
 
+void TGameEngineImpl::unregisterInputCallback(TInputEventType event_type) {
+    event_dispatcher_.registerEventHandler(
+        MakeEventType(std::move(event_type)), TEventHandler{}
+    );
+}
+
 TGameEngine::TGameEngine() {
 }
 
@@ -185,6 +192,11 @@ void TGameEngine::registerInputCallback(
     assert(impl_);
 
     impl_->registerInputCallback(std::move(event_type), std::move(callback));
+}
+
+void TGameEngine::unregisterInputCallback(TInputEventType event_type) {
+    assert(impl_);
+    impl_->unregisterInputCallback(std::move(event_type));
 }
 
 };  // namespace NGameEngine

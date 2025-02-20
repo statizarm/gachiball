@@ -4,6 +4,7 @@
 
 #include "engine.hpp"
 #include "game.hpp"
+#include "player_camera.hpp"
 
 namespace NGachiBall {
 
@@ -27,7 +28,7 @@ class TGame : public NGameEngine::IGame {
 
     std::vector<std::unique_ptr<NGameEngine::IMesh>> meshes_;
 
-    std::unique_ptr<NGameEngine::ICamera> camera_;
+    std::unique_ptr<TPlayerCamera> camera_;
 
     NGameEngine::TGameEngine* engine_;
 

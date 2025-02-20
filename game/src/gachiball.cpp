@@ -159,7 +159,23 @@ void TGame::initKeyMap() {
             .key          = EKey::MOUSE_LEFT,
             .key_action   = EKeyAction::PRESSED,
         },
-        [this](TInputEvent) {}
+        [this](TInputEvent event) {
+            event.context.window->grabCursor();
+            engine_->registerInputCallback(
+                NGameEngine::TInputEventType{
+                    .input_device = EInputDevice::MOUSE,
+                    .key          = EKey::MOUSE,
+                    .key_action   = EKeyAction::MOVED,
+                },
+                [this](TInputEvent move_event) {
+                    auto xdelta = move_event.context.mouse.curr_xpos -
+                                  move_event.context.mouse.prev_xpos;
+                    auto ydelta = move_event.context.mouse.curr_ypos -
+                                  move_event.context.mouse.prev_ypos;
+                    camera_->move(xdelta, ydelta);
+                }
+            );
+        }
     );
     engine_->registerInputCallback(
         NGameEngine::TInputEventType{
@@ -167,7 +183,15 @@ void TGame::initKeyMap() {
             .key          = EKey::MOUSE_LEFT,
             .key_action   = EKeyAction::RELEASED,
         },
-        [this](TInputEvent) {}
+        [this](TInputEvent event) {
+            event.context.window->ungrabCursor();
+            engine_->unregisterInputCallback(NGameEngine::TInputEventType{
+                .input_device = EInputDevice::MOUSE,
+                .key          = EKey::MOUSE,
+                .key_action   = EKeyAction::MOVED,
+            });
+            camera_->reset();
+        }
     );
 }
 

@@ -32,6 +32,7 @@ class TGameEngine {
     void registerInputCallback(
         TInputEventType inputEventType, TInputCallback callback
     );
+    void unregisterInputCallback(TInputEventType inputEventType);
 
   private:
     std::unique_ptr<TGameEngineImpl> impl_;

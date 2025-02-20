@@ -11,13 +11,17 @@ class TWindowImpl {
     virtual ~TWindowImpl() = default;
 
   public:
-    virtual std::pair<int, int> window_size() const = 0;
+    virtual std::pair<int, int> window_size() const           = 0;
+    virtual std::pair<double, double> cursor_position() const = 0;
 
   public:
     virtual bool shouldClose() = 0;
 
     virtual void bindCurrentContext() = 0;
     virtual void swapBuffers()        = 0;
+
+    virtual void grabCursor()   = 0;
+    virtual void ungrabCursor() = 0;
 
     virtual void registerKeyboardKeyCallback(TKeyboardKeyCallback callback) = 0;
     virtual void registerMouseKeyCallback(TMouseKeyCallback callback)       = 0;
@@ -32,12 +36,16 @@ class TGLFWWindow : public TWindowImpl {
 
   public:
     std::pair<int, int> window_size() const override;
+    virtual std::pair<double, double> cursor_position() const override;
 
   public:
     bool shouldClose() override;
 
     void bindCurrentContext() override;
     void swapBuffers() override;
+
+    void grabCursor() override;
+    void ungrabCursor() override;
 
     void registerKeyboardKeyCallback(TKeyboardKeyCallback callback) override;
     void registerMouseKeyCallback(TMouseKeyCallback callback) override;
@@ -64,6 +72,12 @@ std::pair<int, int> TGLFWWindow::window_size() const {
     return {width, height};
 }
 
+std::pair<double, double> TGLFWWindow::cursor_position() const {
+    double xpos, ypos;
+    glfwGetCursorPos(window_, &xpos, &ypos);
+    return {xpos, ypos};
+}
+
 bool TGLFWWindow::shouldClose() {
     return glfwWindowShouldClose(window_);
 }
@@ -74,6 +88,14 @@ void TGLFWWindow::bindCurrentContext() {
 
 void TGLFWWindow::swapBuffers() {
     glfwSwapBuffers(window_);
+}
+
+void TGLFWWindow::grabCursor() {
+    glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+}
+
+void TGLFWWindow::ungrabCursor() {
+    glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 void TGLFWWindow::registerKeyboardKeyCallback(TKeyboardKeyCallback callback) {
@@ -132,6 +154,10 @@ std::pair<int, int> TWindow::window_size() const {
     return impl_->window_size();
 }
 
+std::pair<double, double> TWindow::cursor_position() const {
+    return impl_->cursor_position();
+}
+
 bool TWindow::shouldClose() {
     return impl_->shouldClose();
 }
@@ -142,6 +168,14 @@ void TWindow::bindCurrentContext() {
 
 void TWindow::swapBuffers() {
     return impl_->swapBuffers();
+}
+
+void TWindow::grabCursor() {
+    impl_->grabCursor();
+}
+
+void TWindow::ungrabCursor() {
+    impl_->ungrabCursor();
 }
 
 void TWindow::registerKeyboardKeyCallback(TKeyboardKeyCallback callback) {

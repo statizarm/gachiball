@@ -25,11 +25,16 @@ class TWindow {
     int height() const;
     std::pair<int, int> window_size() const;
 
+    std::pair<double, double> cursor_position() const;
+
   public:
     bool shouldClose();
 
     void bindCurrentContext();
     void swapBuffers();
+
+    void grabCursor();
+    void ungrabCursor();
 
     void registerKeyboardKeyCallback(TKeyboardKeyCallback callback);
     void registerMouseKeyCallback(TMouseKeyCallback callback);

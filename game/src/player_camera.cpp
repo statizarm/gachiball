@@ -6,24 +6,23 @@
 namespace NGachiBall {
 
 static constexpr float kDefaultDistance = 20.f;
-static constexpr float kInitXAngle      = glm::radians(30.f);
-static constexpr float kInitYAngle      = glm::radians(0.f);
-static constexpr float kRotationSpeed   = 1.f;
+static constexpr float kInitAlpha       = glm::radians(0.f);
+static constexpr float kInitTheta       = glm::radians(30.f);
+static constexpr float kRotationSpeed   = 0.05f;
 
 TPlayerCamera::TPlayerCamera(glm::vec3 look_to)
     : look_to_(std::move(look_to))
     , distance_(kDefaultDistance)
-    , x_angle_(kInitXAngle)
-    , y_angle_(kInitYAngle) {
+    , alpha_(kInitAlpha)
+    , theta_(kInitTheta) {
 }
 
 glm::mat4x4 TPlayerCamera::view() const {
-    glm::vec3 position =
-        distance_ * glm::vec3{
-                        glm::sin(y_angle_) * glm::cos(x_angle_),
-                        glm::sin(x_angle_),
-                        glm::cos(y_angle_) * glm::cos(x_angle_)
-                    };
+    glm::vec3 position = distance_ * glm::vec3{
+                                         glm::sin(alpha_) * glm::cos(theta_),
+                                         glm::sin(theta_),
+                                         glm::cos(alpha_) * glm::cos(theta_)
+                                     };
 
     glm::vec3 up = glm::vec3{0.f, 1.f, 0.f};
 
@@ -31,13 +30,13 @@ glm::mat4x4 TPlayerCamera::view() const {
 }
 
 void TPlayerCamera::move(float x_delta, float y_delta) {
-    x_angle_ += glm::radians(x_delta);
-    y_angle_ += glm::radians(y_delta);
+    alpha_ -= glm::radians(x_delta) * kRotationSpeed;
+    theta_ += glm::radians(y_delta) * kRotationSpeed;
 }
 
 void TPlayerCamera::reset() {
-    x_angle_ = kInitXAngle;
-    y_angle_ = kInitYAngle;
+    alpha_ = kInitAlpha;
+    theta_ = kInitTheta;
 }
 
 }  // namespace NGachiBall

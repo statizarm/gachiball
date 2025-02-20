@@ -29,6 +29,9 @@ class TInputEngine::TImpl {
   private:
     TEventDispatcher* event_dispatcher_;
     TWindow* window_;
+
+    double prev_cursor_xpos_;
+    double prev_cursor_ypos_;
 };
 
 TInputEngine::TImpl::TImpl(TWindow* window, TEventDispatcher* event_dispatcher)
@@ -43,6 +46,8 @@ void TInputEngine::TImpl::init() {
     window_->registerKeyboardKeyCallback(KeyCallback);
     window_->registerMouseKeyCallback(MouseKeyCallback);
     window_->registerCursorPositionCallback(CursorPositionCallback);
+
+    std::tie(prev_cursor_xpos_, prev_cursor_ypos_) = window_->cursor_position();
 }
 
 void TInputEngine::TImpl::deinit() {
@@ -127,7 +132,7 @@ void TInputEngine::TImpl::keyCallback(
                 .key          = TranslateGLFWKey(key),
                 .key_action   = TranslateGLFWKeyAction(action),
             },
-        .context = {}
+        .context = {.window = window_}
     };
     event_dispatcher_->raiseEvent(MakeEvent(input_event));
 }
@@ -140,7 +145,7 @@ void TInputEngine::TImpl::mouseKeyCallback(int key, int action, int mods) {
                 .key          = TranslateGLFWKey(key),
                 .key_action   = TranslateGLFWKeyAction(action),
             },
-        .context = {}
+        .context = {.window = window_}
     };
     event_dispatcher_->raiseEvent(MakeEvent(std::move(input_event)));
 }
@@ -155,10 +160,17 @@ void TInputEngine::TImpl::cursorPositionCallback(double xpos, double ypos) {
             },
     };
     input_event.context.mouse = {
-        .xpos = xpos,
-        .ypos = ypos,
+        .prev_xpos = prev_cursor_xpos_,
+        .prev_ypos = prev_cursor_ypos_,
+        .curr_xpos = xpos,
+        .curr_ypos = ypos
     };
+    input_event.context.window = window_;
+
     event_dispatcher_->raiseEvent(MakeEvent(std::move(input_event)));
+
+    prev_cursor_xpos_ = xpos;
+    prev_cursor_ypos_ = ypos;
 }
 
 namespace {
