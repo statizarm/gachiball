@@ -13,6 +13,7 @@
 #include "event_dispatcher.hpp"
 #include "input_engine.hpp"
 #include "mesh.hpp"
+#include "physics_engine.hpp"
 #include "window.hpp"
 
 namespace NGameEngine {
@@ -28,6 +29,7 @@ class TGameEngineImpl {
     void bindCamera(const ICamera *camera);
 
     void addBody(TBody *body);
+    void addBody(TRigidBody *body);
     void removeBody(TBody *body);
 
     void registerInputCallback(
@@ -44,6 +46,7 @@ class TGameEngineImpl {
 
     TInputEngine input_engine_;
     TEventDispatcher event_dispatcher_;
+    TPhysicsEngine physics_engine_;
 
     std::unordered_set<TBody *> bodies_;
     const ICamera *camera_;
@@ -67,10 +70,12 @@ void TGameEngineImpl::init() {
     }
 
     input_engine_.init(window_.get(), &event_dispatcher_);
+    physics_engine_.init(1.f / 60.f);
 }
 
 void TGameEngineImpl::deinit() {
     window_.reset();
+    physics_engine_.deinit();
     glfwTerminate();
 }
 
@@ -120,6 +125,10 @@ void TGameEngineImpl::bindCamera(const ICamera *camera) {
 
 void TGameEngineImpl::addBody(TBody *body) {
     bodies_.insert(body);
+}
+
+void TGameEngineImpl::addBody(TRigidBody *body) {
+    physics_engine_.addRigidBody(body);
 }
 
 void TGameEngineImpl::removeBody(TBody *body) {
@@ -175,6 +184,12 @@ void TGameEngine::bindCamera(const ICamera *camera) {
 }
 
 void TGameEngine::addBody(TBody *body) {
+    assert(impl_);
+
+    impl_->addBody(body);
+}
+
+void TGameEngine::addBody(TRigidBody *body) {
     assert(impl_);
 
     impl_->addBody(body);

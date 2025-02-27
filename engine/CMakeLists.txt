@@ -32,6 +32,7 @@ set(
     ${INCLUDES_DIR}/input_engine.hpp
     ${INCLUDES_DIR}/input_event.hpp
     ${INCLUDES_DIR}/mesh.hpp
+    ${INCLUDES_DIR}/physics_engine.hpp
     ${INCLUDES_DIR}/window.hpp
 )
 set(
@@ -42,6 +43,7 @@ set(
     src/game.cpp
     src/input_engine.cpp
     src/mesh.cpp
+    src/physics_engine.cpp
     src/window.cpp
 )
 

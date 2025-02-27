@@ -27,6 +27,7 @@ class TGameEngine {
     void bindCamera(const ICamera* camera);
 
     void addBody(TBody* body);
+    void addBody(TRigidBody* body);
     void removeBody(TBody* body);
 
     void registerInputCallback(
