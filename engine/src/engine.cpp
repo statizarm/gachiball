@@ -108,10 +108,14 @@ void TGameEngineImpl::run(IGame *game) {
         window_->swapBuffers();
         glfwPollEvents();
 
+        auto duration = glfwGetTime() - start;
+        ///////////////////////////////////////////////////////////////////////
+        // NOTE: update physics
+        physics_engine_.update(duration);
+
         ///////////////////////////////////////////////////////////////////////
         // NOTE: update game
 
-        auto duration = glfwGetTime() - start;
         game->update(duration);
 
         start = glfwGetTime();
@@ -129,6 +133,7 @@ void TGameEngineImpl::addBody(TBody *body) {
 
 void TGameEngineImpl::addBody(TRigidBody *body) {
     physics_engine_.addRigidBody(body);
+    addBody(static_cast<TBody *>(body));
 }
 
 void TGameEngineImpl::removeBody(TBody *body) {

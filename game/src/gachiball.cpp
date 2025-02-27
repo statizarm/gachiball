@@ -1,6 +1,7 @@
 #include "gachiball.hpp"
 
 #include <glm/trigonometric.hpp>
+#include <iostream>
 
 #include "player_camera.hpp"
 
@@ -16,8 +17,8 @@ void TGame::deinit() {
     engine_->removeBody(&platform_);
     engine_->removeBody(&ball_);
 
-    platform_ = NGameEngine::TBody{};
-    ball_     = NGameEngine::TBody{};
+    platform_ = NGameEngine::TRigidBody{};
+    ball_     = NGameEngine::TRigidBody{};
 }
 
 void TGame::init() {
@@ -31,18 +32,25 @@ void TGame::init() {
         meshes_[1] = NGameEngine::CreateBallMesh();
     }
 
-    platform_ = NGameEngine::TBody{
+    platform_ = NGameEngine::TRigidBody{{
         .mesh     = meshes_[0].get(),
         .position = {0.f, 0.f, 0.f},
         .rotation = glm::quat_cast(glm::identity<glm::mat4x4>()),
-    };
+    }};
+
+    platform_.mass     = 0.f;
+    platform_.mass_inv = 0.f;
     engine_->addBody(&platform_);
 
-    ball_ = NGameEngine::TBody{
+    ball_ = NGameEngine::TRigidBody{{
         .mesh     = meshes_[1].get(),
         .position = {0.f, 5.f, 0.f},
         .rotation = glm::quat_cast(glm::identity<glm::mat4x4>()),
-    };
+    }};
+
+    ball_.mass     = 1.f;
+    ball_.mass_inv = 1.f;
+
     engine_->addBody(&ball_);
 
     camera_ = std::make_unique<NGachiBall::TPlayerCamera>(glm::vec3{0, 0, 0});
@@ -64,11 +72,25 @@ void TGame::update(float dt) {
         kRotationSpeed * dt * z_rotation_factor_,
         {0.f, 0.f, 1.f}
     );
+
+    if (ball_.position.y < -5.f) {
+        lose();
+    }
 }
 
 void TGame::restart() {
     deinit();
     init();
+}
+
+void TGame::lose() {
+    std::cout << "You lose!" << std::endl;
+    restart();
+}
+
+void TGame::win() {
+    std::cout << "You win!" << std::endl;
+    restart();
 }
 
 void TGame::initKeyMap() {

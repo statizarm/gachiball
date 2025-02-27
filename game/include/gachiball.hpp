@@ -19,12 +19,14 @@ class TGame : public NGameEngine::IGame {
 
   private:
     void restart();
+    void lose();
+    void win();
 
     void initKeyMap();
 
   private:
-    NGameEngine::TBody platform_;
-    NGameEngine::TBody ball_;
+    NGameEngine::TRigidBody platform_;
+    NGameEngine::TRigidBody ball_;
 
     std::vector<std::unique_ptr<NGameEngine::IMesh>> meshes_;
 
