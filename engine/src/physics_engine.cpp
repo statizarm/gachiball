@@ -33,7 +33,7 @@ void TPhysicsEngine::simulate(float dt) {
 
 void TPhysicsEngine::moveBodies(float dt) {
     for (auto* body : bodies_) {
-        body->position += body->velocity * spent_time_;
+        body->position += body->velocity * dt;
     }
 }
 
@@ -42,7 +42,7 @@ void TPhysicsEngine::applyForces(float dt) {
 
     for (auto* body : bodies_) {
         body->acceleration = body->mass * kG * body->mass_inv;
-        body->velocity += body->acceleration * spent_time_;
+        body->velocity += body->acceleration * dt;
     }
 }
 
